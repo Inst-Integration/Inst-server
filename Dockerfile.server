@@ -1,0 +1,13 @@
+FROM eclipse-temurin:21-jre-jammy
+
+ENV JAVA_OPTS=""
+
+WORKDIR /app
+
+COPY build/libs/*.jar app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS \
+    -Dspring.datasource.url=jdbc:postgresql://${DB_HOST}:5432/${DB_NAME} \
+    -jar app.jar"]
