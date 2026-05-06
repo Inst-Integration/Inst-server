@@ -58,5 +58,8 @@ cloud:
 inst-ai:
   url: ${INST_AI_URL:http://localhost:8000}
 
+runpod:
+  api-key: ${RUNPOD_API_KEY}
+
 server:
   port: 8080

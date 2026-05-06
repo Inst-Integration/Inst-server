@@ -23,9 +23,8 @@ public class ScorePipelineRunner {
         Score score = scoreRepository.findById(scoreId)
                 .orElseThrow(() -> new InstException(ErrorCode.SCORE_NOT_FOUND));
         try {
-            AiPipelineClient.TranscribeResponse response =
-                    aiPipelineClient.transcribe(youtubeUrl, instrument);
-            score.markDone(response.musicXmlUrl());
+            String musicXmlUrl = aiPipelineClient.transcribe(youtubeUrl, instrument);
+            score.markDone(musicXmlUrl);
         } catch (Exception e) {
             log.error("파이프라인 실패 scoreId={}", scoreId, e);
             score.markFailed();

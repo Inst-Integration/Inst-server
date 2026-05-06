@@ -11,20 +11,33 @@ public class AiPipelineClient {
 
     private final RestClient restClient;
 
-    public AiPipelineClient(@Value("${inst-ai.url}") String baseUrl) {
+    public AiPipelineClient(
+            @Value("${inst-ai.url}") String baseUrl,
+            @Value("${runpod.api-key}") String apiKey
+    ) {
         this.restClient = RestClient.builder()
                 .baseUrl(baseUrl)
+                .defaultHeader("Authorization", "Bearer " + apiKey)
+                .defaultHeader("Content-Type", "application/json")
                 .build();
     }
 
-    public record TranscribeRequest(String youtubeUrl, String instrument) {}
-    public record TranscribeResponse(String musicXmlUrl) {}
+    public record RunPodInput(String youtube_url, String instrument) {}
+    public record RunPodRequest(RunPodInput input) {}
+    public record RunPodOutput(String musicXmlUrl) {}
+    public record RunPodResponse(String id, String status, RunPodOutput output) {}
 
-    public TranscribeResponse transcribe(String youtubeUrl, String instrument) {
-        return restClient.post()
-                .uri("/transcribe")
-                .body(new TranscribeRequest(youtubeUrl, instrument))
+    public String transcribe(String youtubeUrl, String instrument) {
+        RunPodResponse response = restClient.post()
+                .uri("/runsync")
+                .body(new RunPodRequest(new RunPodInput(youtubeUrl, instrument)))
                 .retrieve()
-                .body(TranscribeResponse.class);
+                .body(RunPodResponse.class);
+
+        if (response == null || response.output() == null) {
+            throw new RuntimeException("RunPod 응답 없음");
+        }
+
+        return response.output().musicXmlUrl();
     }
 }
