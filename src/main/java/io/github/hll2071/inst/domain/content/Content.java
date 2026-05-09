@@ -19,8 +19,14 @@ public class Content extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
-    private String videoUrl; // 강의 영상 S3 URL
+    @Column
+    private String videoUrl;
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+    @Column
+    private String imageUrl;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -31,21 +37,23 @@ public class Content extends BaseEntity {
     private ContentLevel level;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "score_id", nullable = false)
-    private Score score; // 연습용 악보 (WARMUP 타입)
+    @JoinColumn(name = "score_id")
+    private Score score;
 
     @Column(nullable = false)
-    private int completionScoreThreshold; // 수료 조건 점수 (예: 80)
+    private int completionScoreThreshold;
 
     @Column(nullable = false)
-    private int orderIndex; // 학습 순서
+    private int orderIndex;
 
     @Builder
-    private Content(String title, String videoUrl, Instrument instrument,
-                    ContentLevel level, Score score,
+    private Content(String title, String videoUrl, String description, String imageUrl,
+                    Instrument instrument, ContentLevel level, Score score,
                     int completionScoreThreshold, int orderIndex) {
         this.title = title;
         this.videoUrl = videoUrl;
+        this.description = description;
+        this.imageUrl = imageUrl;
         this.instrument = instrument;
         this.level = level;
         this.score = score;
