@@ -46,7 +46,7 @@ public class SendVerificationEmailUseCase {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(command.email());
         message.setSubject("[inst] 이메일 인증");
-        message.setText(baseUrl + "/auth/verify-email?token=" + token);
+        message.setText("instapp://auth/verify?token=" + token);
         mailSender.send(message);
     }
 }
