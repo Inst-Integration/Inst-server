@@ -23,9 +23,6 @@ public class SendVerificationEmailUseCase {
     private final JavaMailSender mailSender;
     private final ObjectMapper objectMapper;
 
-    @Value("${server.base-url:http://localhost:8080}")
-    private String baseUrl;
-
     // Redis에 임시 저장할 회원가입 데이터
     public record Command(String email, String password, String nickname) {}
 
