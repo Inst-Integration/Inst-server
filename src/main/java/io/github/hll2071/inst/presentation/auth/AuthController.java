@@ -4,11 +4,14 @@ import io.github.hll2071.inst.application.auth.*;
 import io.github.hll2071.inst.presentation.auth.dto.request.*;
 import io.github.hll2071.inst.presentation.auth.dto.response.TokenResponse;
 import io.github.hll2071.inst.shared.response.ApiResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/auth")
@@ -83,5 +86,20 @@ public class AuthController {
             @Valid @RequestBody ResetPasswordRequest request) {
         resetPasswordUseCase.execute(request.token(), request.newPassword());
         return ResponseEntity.ok(ApiResponse.ok("비밀번호가 변경됐습니다.", null));
+    }
+
+    // AuthController.java에 추가
+    @GetMapping("/auth/verify")
+    public void verifyRedirect(
+            @RequestParam String token,
+            HttpServletResponse response) throws IOException {
+        response.sendRedirect("instapp://auth/verify?token=" + token);
+    }
+
+    @GetMapping("/auth/reset")
+    public void resetRedirect(
+            @RequestParam String token,
+            HttpServletResponse response) throws IOException {
+        response.sendRedirect("instapp://auth/reset?token=" + token);
     }
 }

@@ -5,7 +5,6 @@ import io.github.hll2071.inst.infrastructure.user.UserRepository;
 import io.github.hll2071.inst.shared.exception.ErrorCode;
 import io.github.hll2071.inst.shared.exception.InstException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -43,7 +42,7 @@ public class SendVerificationEmailUseCase {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(command.email());
         message.setSubject("[inst] 이메일 인증");
-        message.setText("instapp://auth/verify?token=" + token);
+        message.setText("http://13.209.8.219/auth/verify?token=" + token);
         mailSender.send(message);
     }
 }

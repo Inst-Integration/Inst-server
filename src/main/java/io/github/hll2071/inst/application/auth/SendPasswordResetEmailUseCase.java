@@ -3,7 +3,6 @@ package io.github.hll2071.inst.application.auth;
 import io.github.hll2071.inst.infrastructure.auth.TokenRepository;
 import io.github.hll2071.inst.infrastructure.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -19,9 +18,6 @@ public class SendPasswordResetEmailUseCase {
     private final TokenRepository tokenRepository;
     private final JavaMailSender mailSender;
 
-    @Value("${server.base-url:http://localhost:8080}")
-    private String baseUrl;
-
     public void execute(String email) {
         // 존재하지 않는 이메일이어도 동일한 응답 반환 (이메일 존재 여부 노출 방지)
         userRepository.findByEmail(email).ifPresent(user -> {
@@ -31,7 +27,7 @@ public class SendPasswordResetEmailUseCase {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(email);
             message.setSubject("[inst] 비밀번호 재설정");
-            message.setText(baseUrl + "/api/auth/reset-password?token=" + token);
+            message.setText("http://13.209.8.219/auth/verify?token=" + token);
             mailSender.send(message);
         });
     }
