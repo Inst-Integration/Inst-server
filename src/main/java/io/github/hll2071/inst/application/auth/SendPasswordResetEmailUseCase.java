@@ -27,7 +27,7 @@ public class SendPasswordResetEmailUseCase {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(email);
             message.setSubject("[inst] 비밀번호 재설정");
-            message.setText("http://13.209.8.219/auth/verify?token=" + token);
+            message.setText("http://13.209.8.219/auth/reset-password?token=" + token);
             mailSender.send(message);
         });
     }

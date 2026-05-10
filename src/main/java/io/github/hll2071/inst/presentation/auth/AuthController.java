@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
+
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -80,26 +81,18 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.ok("비밀번호 재설정 메일을 발송했습니다.", null));
     }
 
+    @GetMapping("/reset-password")
+    public void resetPasswordRedirect(
+            @RequestParam String token,
+            HttpServletResponse response) throws IOException {
+        response.sendRedirect("instapp://auth/reset?token=" + token);
+    }
+
     // 6. 비밀번호 재설정
     @PostMapping("/reset-password")
     public ResponseEntity<ApiResponse<Void>> resetPassword(
             @Valid @RequestBody ResetPasswordRequest request) {
         resetPasswordUseCase.execute(request.token(), request.newPassword());
         return ResponseEntity.ok(ApiResponse.ok("비밀번호가 변경됐습니다.", null));
-    }
-
-    // AuthController.java에 추가
-    @GetMapping("/auth/verify")
-    public void verifyRedirect(
-            @RequestParam String token,
-            HttpServletResponse response) throws IOException {
-        response.sendRedirect("instapp://auth/verify?token=" + token);
-    }
-
-    @GetMapping("/auth/reset")
-    public void resetRedirect(
-            @RequestParam String token,
-            HttpServletResponse response) throws IOException {
-        response.sendRedirect("instapp://auth/reset?token=" + token);
     }
 }

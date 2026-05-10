@@ -42,7 +42,7 @@ public class SendVerificationEmailUseCase {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(command.email());
         message.setSubject("[inst] 이메일 인증");
-        message.setText("http://13.209.8.219/auth/verify?token=" + token);
+        message.setText("http://13.209.8.219/auth/verify-email?token=" + token);
         mailSender.send(message);
     }
 }
