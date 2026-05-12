@@ -7,7 +7,11 @@ import org.springframework.stereotype.Component;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 
+import java.time.Duration;
 import java.util.UUID;
 
 @Slf4j
@@ -16,15 +20,14 @@ import java.util.UUID;
 public class S3Uploader {
 
     private final S3Client s3Client;
+    private final S3Presigner s3Presigner;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    @Value("${cloud.aws.region.static}")
-    private String region;
-
+    // BUG-23: presigned URL 반환 (7일 TTL), 기존 plain public URL은 403 반환
     public String upload(byte[] data, String originalFilename, String contentType) {
-        String key = UUID.randomUUID() + "_" + originalFilename;
+        String key = "musicxml/" + UUID.randomUUID() + "_" + originalFilename;
 
         s3Client.putObject(
                 PutObjectRequest.builder()
@@ -35,6 +38,14 @@ public class S3Uploader {
                 RequestBody.fromBytes(data)
         );
 
-        return "https://%s.s3.%s.amazonaws.com/%s".formatted(bucket, region, key);
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofDays(7))
+                .getObjectRequest(GetObjectRequest.builder()
+                        .bucket(bucket)
+                        .key(key)
+                        .build())
+                .build();
+
+        return s3Presigner.presignGetObject(presignRequest).url().toString();
     }
 }

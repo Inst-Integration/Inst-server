@@ -21,14 +21,9 @@ public class CompleteContentUseCase {
     private final UserContentProgressRepository userContentProgressRepository;
 
     @Transactional
-    public void execute(Long userId, Long contentId, int totalScore) {
+    public void execute(Long userId, Long contentId) {
         Content content = contentRepository.findById(contentId)
                 .orElseThrow(() -> new InstException(ErrorCode.CONTENT_NOT_FOUND));
-
-        // 수료 조건 미달
-        if (totalScore < content.getCompletionScoreThreshold()) {
-            throw new InstException(ErrorCode.CONTENT_COMPLETION_SCORE_NOT_MET);
-        }
 
         // 이미 수료
         if (userContentProgressRepository.existsByUserIdAndContentId(userId, contentId)) {

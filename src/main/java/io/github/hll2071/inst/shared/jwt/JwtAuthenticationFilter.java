@@ -29,6 +29,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Long userId = jwtProvider.getUserId(token);
             String role = jwtProvider.parseClaims(token).get("role", String.class);
 
+            // BUG-26: role이 없으면 refresh token — 일반 API 접근 차단
+            if (role == null) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
                             userId,

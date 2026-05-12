@@ -50,7 +50,7 @@ public class ContentController {
             @AuthenticationPrincipal Long userId,
             @PathVariable Long contentId,
             @RequestParam int totalScore) {
-        completeContentUseCase.execute(userId, contentId, totalScore);
+        completeContentUseCase.execute(userId, contentId);
         return ResponseEntity.ok(ApiResponse.ok("수료가 완료됐습니다.", null));
     }
 }
