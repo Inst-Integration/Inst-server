@@ -1,6 +1,8 @@
 package io.github.hll2071.inst.presentation.tmi;
 
 import io.github.hll2071.inst.application.tmi.*;
+import io.github.hll2071.inst.domain.tmi.Tmi;
+import io.github.hll2071.inst.domain.tmi.TmiCategory;
 import io.github.hll2071.inst.presentation.tmi.dto.request.SetTmiInterestRequest;
 import io.github.hll2071.inst.presentation.tmi.dto.request.SubmitQuizRequest;
 import io.github.hll2071.inst.presentation.tmi.dto.response.TmiDetailResponse;
@@ -23,6 +25,8 @@ public class TmiController {
     private final GetTmiDetailUseCase getTmiDetailUseCase;
     private final SetTmiInterestUseCase setTmiInterestUseCase;
     private final SubmitTmiQuizUseCase submitTmiQuizUseCase;
+    private final GetTmiRandomWithQuizUseCase getTmiRandomWithQuizUseCase;
+    private final GetTmiRandomByCategoryUseCase getTmiRandomByCategoryUseCase;
 
     // 오늘의 TMI 목록 (관심사 기반 랜덤 3개)
     @GetMapping
@@ -59,5 +63,18 @@ public class TmiController {
             @Valid @RequestBody SubmitQuizRequest request) {
         SubmitTmiQuizUseCase.Result result = submitTmiQuizUseCase.execute(quizId, request.optionId());
         return ResponseEntity.ok(ApiResponse.ok(result.correct()));
+    }
+
+    @GetMapping("/random")
+    public ResponseEntity<ApiResponse<TmiResponse>> getTmiRandom() {
+        Tmi tmi = getTmiRandomWithQuizUseCase.execute();
+        return ResponseEntity.ok(ApiResponse.ok(TmiResponse.from(tmi)));
+    }
+
+    @GetMapping("/category/{category}/random")
+    public ResponseEntity<ApiResponse<TmiResponse>> getTmiRandomByCategory(
+            @PathVariable TmiCategory category) {
+        Tmi tmi = getTmiRandomByCategoryUseCase.execute(category);
+        return ResponseEntity.ok(ApiResponse.ok(TmiResponse.from(tmi)));
     }
 }
