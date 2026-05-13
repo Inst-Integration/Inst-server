@@ -35,9 +35,14 @@ public class Score extends BaseEntity {
     @Column(nullable = false)
     private ScoreStatus status; // PENDING, DONE, FAILED
 
-    private String youtubeUrl;   // AUTO 타입일 때만 사용
-    private String musicXmlUrl;  // S3 URL
-    private String pdfUrl;       // UPLOAD 타입 PDF일 때
+    @Column(columnDefinition = "TEXT")
+    private String musicXmlUrl;
+
+    @Column(columnDefinition = "TEXT")
+    private String pdfUrl;
+
+    @Column(columnDefinition = "TEXT")
+    private String youtubeUrl;
 
     @Builder
     private Score(User user, String title, ScoreType scoreType,
