@@ -48,8 +48,7 @@ public class ContentController {
     @PostMapping("/{contentId}/complete")
     public ResponseEntity<ApiResponse<Void>> completeContent(
             @AuthenticationPrincipal Long userId,
-            @PathVariable Long contentId,
-            @RequestParam int totalScore) {
+            @PathVariable Long contentId) {
         completeContentUseCase.execute(userId, contentId);
         return ResponseEntity.ok(ApiResponse.ok("수료가 완료됐습니다.", null));
     }
