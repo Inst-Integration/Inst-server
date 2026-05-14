@@ -36,8 +36,8 @@ public class AiPipelineClient {
 
     public record RunPodInput(String youtube_url, String instrument) {}
     public record RunPodRequest(RunPodInput input) {}
-    public record RunPodOutput(String musicXmlUrl) {}  // BUG-05: Python 반환 키를 camelCase로 통일해 매핑
-    public record RunPodResponse(String id, String status, RunPodOutput output) {}
+    public record RunPodOutput(String musicXmlUrl, String error) {}
+    public record RunPodResponse(String id, String status, RunPodOutput output, String error) {}
 
     public String transcribe(String youtubeUrl, String instrument) {
         RunPodResponse response = restClient.post()
@@ -47,9 +47,19 @@ public class AiPipelineClient {
                 .body(RunPodResponse.class);
 
         if (response == null || response.output() == null) {
-            throw new RuntimeException("RunPod 응답 없음");
+            String reason = (response != null && response.error() != null) ? response.error() : "응답 없음";
+            throw new RuntimeException("RunPod 실패: " + reason);
         }
 
-        return response.output().musicXmlUrl();
+        if (response.output().error() != null) {
+            throw new RuntimeException("RunPod 변환 실패: " + response.output().error());
+        }
+
+        String musicXmlUrl = response.output().musicXmlUrl();
+        if (musicXmlUrl == null) {
+            throw new RuntimeException("RunPod musicXmlUrl 누락");
+        }
+
+        return musicXmlUrl;
     }
 }
